@@ -1,9 +1,6 @@
 name: AI authorization verification
 on:
   workflow_dispatch:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/authorization-audit.yml']
 permissions:
   contents: read
 jobs:

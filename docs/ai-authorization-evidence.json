@@ -1,0 +1,237 @@
+{
+  "baseline": {
+    "tests": 42,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "observations": [
+      [
+        "BASELINE",
+        "mixed-file preview",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "foreign-company /preview",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "foreign-company /submit",
+        "202"
+      ],
+      [
+        "BASELINE",
+        "foreign-company /result",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "foreign-company /result/detail",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "foreign-company /history",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain /preview",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain /submit",
+        "202"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain /result",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain /result/detail",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain /history",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "other-drafter /preview",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "other-drafter /submit",
+        "202"
+      ],
+      [
+        "BASELINE",
+        "other-drafter /result",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "other-drafter /result/detail",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "other-drafter /history",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain-reviewer /preview",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain-reviewer /submit",
+        "202"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain-reviewer /result",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain-reviewer /result/detail",
+        "200"
+      ],
+      [
+        "BASELINE",
+        "wrong-domain-reviewer /history",
+        "200"
+      ]
+    ]
+  },
+  "protected": {
+    "tests": 42,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "observations": [
+      [
+        "PROTECTED",
+        "mixed-file preview",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "foreign-company /preview",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "foreign-company /submit",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "foreign-company /result",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "foreign-company /result/detail",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "foreign-company /history",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain /preview",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain /submit",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain /result",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain /result/detail",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain /history",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "other-drafter /preview",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "other-drafter /submit",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "other-drafter /result",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "other-drafter /result/detail",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "other-drafter /history",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain-reviewer /preview",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain-reviewer /submit",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain-reviewer /result",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain-reviewer /result/detail",
+        "403"
+      ],
+      [
+        "PROTECTED",
+        "wrong-domain-reviewer /history",
+        "403"
+      ]
+    ]
+  },
+  "metadata": {
+    "date": "2026-10-29",
+    "database": "PostgreSQL 16",
+    "transport": "real HTTP on Spring Boot random TCP port with JWT",
+    "outbound_ai": "mocked; no paid API calls",
+    "baseline_commit": "4f90197cecf82d392591ae874c2978c338a91c88",
+    "protected_commit": "acc662fb69c1554127966ece5251980bec917eee",
+    "run": "https://github.com/withoutsultang/SmartChain_Backend/actions/runs/40881578094"
+  }
+}

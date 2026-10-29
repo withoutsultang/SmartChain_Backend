@@ -2,6 +2,8 @@
 
 [![Portfolio checks](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/portfolio-checks.yml/badge.svg?branch=dev)](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/portfolio-checks.yml)
 
+[![AI authorization](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/authorization-audit.yml/badge.svg)](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/authorization-audit.yml)
+
 > 회사·도메인 권한과 업무 상태를 연결하고, AI 분석 결과를 실제 검토 업무로 전달하는 Spring Boot 백엔드
 
 **KT AIVLE School 빅프로젝트 · 7인 팀 · 최우수상(2위)**
@@ -42,7 +44,9 @@ flowchart TD
 
 ## 실행으로 확인한 신뢰성
 
-2026-10-29 재검증에서 전체 테스트 **443개 통과·1개 건너뜀**, `clean build` 성공을 확인했습니다. 로그인 실패마다 별도 HTTP 요청과 PostgreSQL 조회를 실행해 **실패 횟수 누적·5회 잠금·잠금 중 로그인 거절**을 검증했습니다. 실제 AI 분석 결과의 저장과 결재·Review 생성·보완 요청·최종 승인 이력까지 확인했습니다.
+2026-10-29 재검증에서 전체 테스트 **485개 통과·1개 건너뜀**, `clean build` 성공을 확인했습니다. 로그인 실패마다 별도 HTTP 요청과 PostgreSQL 조회를 실행해 **실패 횟수 누적·5회 잠금·잠금 중 로그인 거절**을 검증했습니다. 실제 AI 분석 결과의 저장과 결재·Review 생성·보완 요청·최종 승인 이력까지 확인했습니다.
+
+AI의 **5개 경로에도 회사·도메인·기안 소유권 정책을 일관되게 적용**하고, 다른 기안의 파일 ID 혼용을 차단했습니다. PostgreSQL의 실제 HTTP 권한 검사 **42개**로 정상 접근 유지와 비동기 분석 등록 전 차단을 확인했습니다. [권한 검증 근거](docs/ai-authorization-verification.md)
 
 [테스트·실행 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
 
