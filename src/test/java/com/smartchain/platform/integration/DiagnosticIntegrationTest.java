@@ -128,9 +128,9 @@ class DiagnosticIntegrationTest {
                 .domain(esgDomain)
                 .title("2026년 1분기 ESG 진단")
                 .content("ESG 진단 캠페인입니다")
-                .periodStartDate(LocalDate.of(2026, 1, 1))
-                .periodEndDate(LocalDate.of(2026, 3, 31))
-                .deadline(LocalDate.of(2026, 2, 28))
+                .periodStartDate(LocalDate.now().minusDays(30))
+                .periodEndDate(LocalDate.now().plusDays(30))
+                .deadline(LocalDate.now().plusDays(15))
                 .build());
 
         // JWT 토큰 생성
@@ -210,6 +210,26 @@ class DiagnosticIntegrationTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.success").value(true))
                     .andExpect(jsonPath("$.data.diagnosticId").exists());
+        }
+
+        @Test
+        @DisplayName("종료된 캠페인에는 기안 생성 불가")
+        void createDiagnostic_ExpiredCampaign_Rejected() throws Exception {
+            Campaign expired = campaignRepository.save(Campaign.builder()
+                    .campaignCode("CAMP-EXPIRED-TEST").ownerCompanyId(1L)
+                    .domain(esgDomain).title("종료 캠페인").content("종료 검증")
+                    .periodStartDate(LocalDate.now().minusDays(60))
+                    .periodEndDate(LocalDate.now().minusDays(1))
+                    .deadline(LocalDate.now().minusDays(1)).build());
+            DiagnosticCreateRequest request = DiagnosticCreateRequest.builder()
+                    .title("종료 캠페인 제출").campaignId(expired.getCampaignId())
+                    .domainCode("ESG").build();
+            mockMvc.perform(post("/api/v1/diagnostics")
+                            .header("Authorization", "Bearer " + drafterToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("D003"));
         }
 
         @Test
