@@ -1,5 +1,7 @@
 # SmartChain Backend
 
+[![Portfolio checks](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/portfolio-checks.yml/badge.svg?branch=dev)](https://github.com/withoutsultang/SmartChain_Backend/actions/workflows/portfolio-checks.yml)
+
 > 회사·도메인 권한과 업무 상태를 연결하고, AI 분석 결과를 실제 검토 업무로 전달하는 Spring Boot 백엔드
 
 **KT AIVLE School 빅프로젝트 · 7인 팀 · 최우수상(2위)**
