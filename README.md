@@ -8,6 +8,14 @@
 
 협력사의 증빙 제출부터 검토·승인·보완 요청까지 연결하는 **AI 기반 공급망 리스크 관리 플랫폼**입니다. ESG·안전보건·하도급 컴플라이언스의 세 업무 영역을 하나의 제출·검토 흐름으로 구성했습니다.
 
+## 실제 서비스 시연
+
+![기안 생성부터 AI 분석·결재·심사까지 실제 화면 시연](https://raw.githubusercontent.com/withoutsultang/SmartChain_Frontend/develop/docs/demo/smartchain-demo.gif)
+
+**기안 생성 → 증빙 9개 업로드·분류 → 실제 AI 분석 → 회사 결재 → 원청 심사·보완 요청 → 최종 승인**을 연결했습니다. 합성 문서로 실제 서비스를 실행해 캡처한 15.4초 시연입니다.
+
+[화면 7개 보기](https://github.com/withoutsultang/SmartChain_Frontend/tree/develop/docs/demo) · [실행 결과와 검증 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
+
 ## 김건우의 주요 기여
 
 팀이 합의한 기능 명세를 기준으로 Claude Code를 활용해 구현하고, 내부 테스트와 팀 QA를 통해 업무 흐름을 확인했습니다. 담당 영역은 **업무 API·AI 연동·권한 검증·상태 흐름·예외 계약·테스트·공통 개발 문서**입니다.
@@ -31,6 +39,12 @@ flowchart TD
     B -->|안전·컴플라이언스| D
     D --> E[검토 결과·이력 확인]
 ```
+
+## 실행으로 확인한 신뢰성
+
+2026-10-29 재검증에서 전체 테스트 **443개 통과·1개 건너뜀**, `clean build` 성공을 확인했습니다. 로그인 실패마다 별도 HTTP 요청과 PostgreSQL 조회를 실행해 **실패 횟수 누적·5회 잠금·잠금 중 로그인 거절**을 검증했습니다. 실제 AI 분석 결과의 저장과 결재·Review 생성·보완 요청·최종 승인 이력까지 확인했습니다.
+
+[테스트·실행 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
 
 ## 기술 구성
 
