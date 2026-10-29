@@ -136,7 +136,8 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional
+    // Authentication failures must commit the failed-attempt counter and account lock.
+    @Transactional(noRollbackFor = CustomException.class)
     public LoginResponse login(LoginRequest request) {
         // 0. reCAPTCHA 검증
         recaptchaService.verify(request.getRecaptchaToken(), "login");
@@ -468,3 +469,4 @@ public class AuthService {
                 .toList();
     }
 }
+
