@@ -447,6 +447,7 @@ class AiAnalysisServiceTest {
 
     private EvidenceFile createTestEvidenceFile(Long id, String fileName) {
         EvidenceFile evidenceFile = EvidenceFile.builder()
+            .diagnostic(createTestDiagnostic(1L))
             .filePath("/path/to/" + fileName)
             .originalFileName(fileName)
             .build();
@@ -458,6 +459,7 @@ class AiAnalysisServiceTest {
 
     private EvidenceFile createTestEvidenceFileWithStatus(Long id, String fileName, ParsingStatus status) {
         EvidenceFile evidenceFile = EvidenceFile.builder()
+            .diagnostic(createTestDiagnostic(1L))
             .filePath("/path/to/" + fileName)
             .originalFileName(fileName)
             .build();

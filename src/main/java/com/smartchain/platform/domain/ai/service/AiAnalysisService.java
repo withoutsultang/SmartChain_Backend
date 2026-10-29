@@ -83,7 +83,7 @@ public class AiAnalysisService {
         String domainCode = getDomainCode(diagnostic);
 
         List<FileInfo> addedFiles = fileIds.stream()
-            .map(this::toFileInfo)
+            .map(fileId -> toFileInfo(fileId, diagnosticId))
             .toList();
 
         // package_id 조회: preview 저장분 → submit 저장분 → null (신규)
@@ -322,9 +322,14 @@ public class AiAnalysisService {
         return "ESG";
     }
 
-    private FileInfo toFileInfo(Long fileId) {
+    private FileInfo toFileInfo(Long fileId, Long diagnosticId) {
         EvidenceFile ef = evidenceFileRepository.findById(fileId)
             .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+
+        // A permitted diagnostic ID must not be used to submit another diagnostic's files.
+        if (ef.getDiagnostic() == null || !diagnosticId.equals(ef.getDiagnostic().getDiagnosticId())) {
+            throw new CustomException(ErrorCode.PERMISSION_DENIED_RESOURCE);
+        }
 
         if (ef.getParsingStatus() != ParsingStatus.SUCCESS) {
             log.warn("파일 파싱 미완료 - fileId: {}, status: {}", fileId, ef.getParsingStatus());

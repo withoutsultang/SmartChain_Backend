@@ -1,6 +1,8 @@
 package com.smartchain.platform.domain.ai.controller;
 
 import com.smartchain.platform.domain.ai.entity.AiAnalysisResult;
+import com.smartchain.platform.domain.diagnostic.service.DiagnosticService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.smartchain.platform.domain.ai.service.AiAnalysisAsyncService;
 import com.smartchain.platform.domain.ai.service.AiAnalysisService;
 import com.smartchain.platform.dto.ai.AiAnalysisRequest;
@@ -33,19 +35,25 @@ public class AiAnalysisController {
     private final AiAnalysisService aiAnalysisService;
     private final AiAnalysisAsyncService aiAnalysisAsyncService;
     private final SlotConfigProperties slotConfigProperties;
+    private final DiagnosticService diagnosticService;
 
-    public AiAnalysisController(AiAnalysisService aiAnalysisService, AiAnalysisAsyncService aiAnalysisAsyncService, SlotConfigProperties slotConfigProperties) {
+    public AiAnalysisController(AiAnalysisService aiAnalysisService, AiAnalysisAsyncService aiAnalysisAsyncService, SlotConfigProperties slotConfigProperties, DiagnosticService diagnosticService) {
         this.aiAnalysisService = aiAnalysisService;
         this.aiAnalysisAsyncService = aiAnalysisAsyncService;
         this.slotConfigProperties = slotConfigProperties;
+        this.diagnosticService = diagnosticService;
     }
 
     @Operation(summary = "AI Run Preview", description = "파일 추가 시 슬롯 추정 및 필수 항목 현황 확인")
     @PostMapping("/preview")
     public ResponseEntity<BaseResponse<RunPreviewResponse>> preview(
+        @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId,
         @RequestBody AiPreviewRequest request
     ) {
+        // Reuse the diagnostic company, ownership and domain policy before data access or async dispatch.
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+
         log.info("AI 분석 미리보기 요청 - diagnosticId: {}, fileIds: {}",
             diagnosticId, request.fileIds());
 
@@ -57,9 +65,13 @@ public class AiAnalysisController {
     @Operation(summary = "AI Run Submit", description = "전체 파일에 대한 AI 검증 요청 (비동기)")
     @PostMapping("/submit")
     public ResponseEntity<BaseResponse<Map<String, Object>>> requestAnalysis(
+        @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId,
         @RequestBody(required = false) AiAnalysisRequest request
     ) {
+        // Reuse the diagnostic company, ownership and domain policy before data access or async dispatch.
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+
         log.info("AI 분석 요청 - diagnosticId: {}, slotHints: {}", diagnosticId,
             request != null && request.slotHints() != null ? request.slotHints().size() : 0);
 
@@ -80,8 +92,12 @@ public class AiAnalysisController {
     @Operation(summary = "AI Run 결과 조회", description = "진단의 최신 AI Run 분석 결과 조회")
     @GetMapping("/result")
     public ResponseEntity<BaseResponse<AiAnalysisResultResponse>> getLatestResult(
+        @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId
     ) {
+        // Reuse the diagnostic company, ownership and domain policy before data access or async dispatch.
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+
         log.info("AI 분석 결과 조회 - diagnosticId: {}", diagnosticId);
 
         AiAnalysisResult result = aiAnalysisService.getLatestResult(diagnosticId);
@@ -93,8 +109,12 @@ public class AiAnalysisController {
     @Operation(summary = "AI Run 결과 상세 조회", description = "진단의 최신 AI Run 분석 결과를 슬롯별로 파싱하여 조회")
     @GetMapping("/result/detail")
     public ResponseEntity<BaseResponse<AiAnalysisResultDetailResponse>> getLatestResultDetail(
+        @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId
     ) {
+        // Reuse the diagnostic company, ownership and domain policy before data access or async dispatch.
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+
         log.info("AI 분석 결과 상세 조회 - diagnosticId: {}", diagnosticId);
 
         AiAnalysisResult result = aiAnalysisService.getLatestResult(diagnosticId);
@@ -106,8 +126,12 @@ public class AiAnalysisController {
     @Operation(summary = "AI Run 이력 조회", description = "진단의 AI Run 분석 이력 전체 조회")
     @GetMapping("/history")
     public ResponseEntity<BaseResponse<List<AiAnalysisResultResponse>>> getAnalysisHistory(
+        @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId
     ) {
+        // Reuse the diagnostic company, ownership and domain policy before data access or async dispatch.
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+
         log.info("AI 분석 이력 조회 - diagnosticId: {}", diagnosticId);
 
         List<AiAnalysisResult> results = aiAnalysisService.getAnalysisHistory(diagnosticId);

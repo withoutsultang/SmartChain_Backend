@@ -1,0 +1,59 @@
+name: AI authorization verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths: ['.github/workflows/authorization-audit.yml']
+permissions:
+  contents: read
+jobs:
+  before-and-after:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: authorization
+          POSTGRES_USER: audit
+          POSTGRES_PASSWORD: isolated-audit-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U audit -d authorization"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: protected
+      - uses: actions/checkout@v4
+        with:
+          ref: 4f90197cecf82d392591ae874c2978c338a91c88
+          path: baseline
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Copy identical HTTP probes to baseline
+        run: cp protected/src/test/java/com/smartchain/platform/integration/AiAuthorizationHttpTest.java baseline/src/test/java/com/smartchain/platform/integration/
+      - name: Reproduce baseline HTTP access using PostgreSQL
+        working-directory: baseline
+        run: bash gradlew test --tests '*AiAuthorizationHttpTest' --no-daemon
+        env:
+          AUTHORIZATION_EXPECT_VULNERABLE: 'true'
+          AUTHORIZATION_DATABASE_URL: jdbc:postgresql://localhost:5432/authorization
+      - name: Verify protected HTTP access using PostgreSQL
+        working-directory: protected
+        run: bash gradlew test --tests '*AiAuthorizationHttpTest' --no-daemon
+        env:
+          AUTHORIZATION_DATABASE_URL: jdbc:postgresql://localhost:5432/authorization
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: authorization-http-evidence
+          path: |
+            baseline/build/test-results/test/
+            baseline/build/reports/tests/test/
+            protected/build/test-results/test/
+            protected/build/reports/tests/test/
+          retention-days: 7
