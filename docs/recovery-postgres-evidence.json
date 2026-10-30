@@ -1,0 +1,82 @@
+{
+  "verified_date": "2026-10-30",
+  "backend_commit": "fb203fb5f3b30293f4d4a28afda1da657c1b57ce",
+  "run": "https://github.com/withoutsultang/SmartChain_Backend/actions/runs/41057940415",
+  "database": "PostgreSQL 16",
+  "transport": "Real Spring Boot HTTP server, JWT and JPA; controlled outbound AI HTTP server",
+  "paid_api_calls": false,
+  "total_tests": 51,
+  "suites": {
+    "com.smartchain.platform.integration.AiAuthorizationHttpTest": {
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "[1] path=/preview",
+        "[2] path=/submit",
+        "[3] path=/result",
+        "[4] path=/result/detail",
+        "[5] path=/history",
+        "[1] path=/preview",
+        "[2] path=/submit",
+        "[3] path=/result",
+        "[4] path=/result/detail",
+        "[5] path=/history",
+        "[1] user=approver, path=/result",
+        "[2] user=approver, path=/result/detail",
+        "[3] user=approver, path=/history",
+        "[4] user=reviewer, path=/result",
+        "[5] user=reviewer, path=/result/detail",
+        "[6] user=reviewer, path=/history",
+        "ownDiagnosticCannotBorrowAnotherDiagnosticsFile()",
+        "foreign-company /preview",
+        "foreign-company /submit",
+        "foreign-company /result",
+        "foreign-company /result/detail",
+        "foreign-company /history",
+        "wrong-domain /preview",
+        "wrong-domain /submit",
+        "wrong-domain /result",
+        "wrong-domain /result/detail",
+        "wrong-domain /history",
+        "other-drafter /preview",
+        "other-drafter /submit",
+        "other-drafter /result",
+        "other-drafter /result/detail",
+        "other-drafter /history",
+        "wrong-domain-reviewer /preview",
+        "wrong-domain-reviewer /submit",
+        "wrong-domain-reviewer /result",
+        "wrong-domain-reviewer /result/detail",
+        "wrong-domain-reviewer /history",
+        "[1] path=/preview",
+        "[2] path=/submit",
+        "[3] path=/result",
+        "[4] path=/result/detail",
+        "[5] path=/history"
+      ],
+      "roundtrip": []
+    },
+    "com.smartchain.platform.integration.AiRecoveryHttpTest": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "concurrentDuplicatesShareOneAttemptAndOneProviderCall()",
+        "previewTimeoutDoesNotStorePackageAndRetrySucceeds()",
+        "ocrFindingIsAnExplicitResultRatherThanExecutionFailure()",
+        "statusEndpointUsesTheSameCompanyScope()",
+        "evidenceCannotChangeDuringAnActiveAttempt()",
+        "timeoutPreservesPreviousResultAndRetryCreatesNewAttempt()",
+        "revisionUploadReanalysisAndResubmissionReuseWorkflowRecords()",
+        "providerErrorIsTerminalAndCanBeRetried()",
+        "expiredAttemptIsRecoverableAndLateWorkerCannotPublish()"
+      ],
+      "roundtrip": [
+        "RECOVERY roundtrip diagnostic=8 approval=1 review=1 result=5->6 COMPLETED"
+      ]
+    }
+  }
+}

@@ -14,9 +14,9 @@
 
 ![기안 생성부터 AI 분석·결재·심사까지 실제 화면 시연](https://raw.githubusercontent.com/withoutsultang/SmartChain_Frontend/develop/docs/demo/smartchain-demo.gif)
 
-**기안 생성 → 증빙 9개 업로드·분류 → 실제 AI 분석 → 회사 결재 → 원청 심사·보완 요청 → 최종 승인**을 연결했습니다. 합성 문서로 실제 서비스를 실행해 캡처한 15.4초 시연입니다.
+**기안 생성 → 증빙 9개 업로드·분류 → 실제 AI 분석 → 회사 결재 → 원청 보완 요청 → 증빙 수정·재분석·재제출 → 최종 승인**을 연결했습니다. 합성 문서로 실제 서비스를 실행해 캡처한 22초 시연입니다.
 
-[화면 7개 보기](https://github.com/withoutsultang/SmartChain_Frontend/tree/develop/docs/demo) · [실행 결과와 검증 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
+[화면 10개 보기](https://github.com/withoutsultang/SmartChain_Frontend/tree/develop/docs/demo) · [실행 결과와 검증 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
 
 ## 김건우의 주요 기여
 
@@ -44,11 +44,19 @@ flowchart TD
 
 ## 실행으로 확인한 신뢰성
 
-2026-10-29 재검증에서 전체 테스트 **485개 통과·1개 건너뜀**, `clean build` 성공을 확인했습니다. 로그인 실패마다 별도 HTTP 요청과 PostgreSQL 조회를 실행해 **실패 횟수 누적·5회 잠금·잠금 중 로그인 거절**을 검증했습니다. 실제 AI 분석 결과의 저장과 결재·Review 생성·보완 요청·최종 승인 이력까지 확인했습니다.
+2026-10-30 재검증에서 전체 테스트 **494개 통과·1개 건너뜀**, `clean build` 성공을 확인했습니다. 로그인 실패마다 별도 HTTP 요청과 PostgreSQL 조회를 실행해 **실패 횟수 누적·5회 잠금·잠금 중 로그인 거절**을 검증했습니다. 실제 AI 분석 결과의 저장과 결재·Review 생성·보완 요청·최종 승인 이력까지 확인했습니다.
 
 AI의 **5개 경로에도 회사·도메인·기안 소유권 정책을 일관되게 적용**하고, 다른 기안의 파일 ID 혼용을 차단했습니다. PostgreSQL의 실제 HTTP 권한 검사 **42개**로 정상 접근 유지와 비동기 분석 등록 전 차단을 확인했습니다. [권한 검증 근거](docs/ai-authorization-verification.md)
 
 [테스트·실행 근거](https://github.com/withoutsultang/SmartChain_AI/blob/main/docs/verification.md)
+
+## 재제출과 장애 복구 검증
+
+**증빙 수정 → 새 분석 결과 → 재결재·재심사 → 최종 승인**의 전체 순환을 실제 OpenAI·Clova·PostgreSQL로 확인했습니다. 진행 중인 중복 분석은 같은 요청으로 합치고, 실패한 요청은 새 요청 ID로 재시도하며 이전 성공 결과는 이력으로 보존합니다. 만료된 작업의 늦은 결과가 새 요청을 덮어쓰지 않도록 저장 시점에도 요청 ID를 확인합니다.
+
+ESG 필수 증빙은 **9개**로 통일하고 공통 설정과 AI 엔진의 차이를 양쪽 저장소 CI에서 검사합니다. PostgreSQL HTTP 검사 **51개(기존 권한 42개 + 재제출·복구 9개)**가 통과했습니다.
+
+[재제출·복구·계약 검증](docs/workflow-recovery-verification.md)
 
 ## 기술 구성
 

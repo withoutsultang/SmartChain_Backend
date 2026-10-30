@@ -1,9 +1,6 @@
 name: Workflow and AI recovery verification
 on:
   workflow_dispatch:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/recovery-verification.yml']
 permissions:
   contents: read
 jobs:
