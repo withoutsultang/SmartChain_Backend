@@ -98,6 +98,7 @@ class FileServiceTest {
 
     @BeforeEach
     void setUp() {
+        org.springframework.test.util.ReflectionTestUtils.setField(fileService, "entityManager", entityManager);
         lenient().when(diagnosticRepository.findForUpdate(any())).thenReturn(java.util.Optional.of(testDiagnostic));
         // Role setup
         lenient().when(drafterRole.getCode()).thenReturn("DRAFTER");
