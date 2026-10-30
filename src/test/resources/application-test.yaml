@@ -50,7 +50,7 @@ ai:
   slots:
     # 슬롯 정의: docs/API_CONTRACT_SSOT.md §8.6 기준
     domains:
-      # ESG 도메인 (15개 슬롯, 필수 4개)
+      # ESG 도메인 (15개 슬롯, 필수 9개)
       esg:
         - name: esg.energy.electricity.usage
           display-name: 전기 사용량
@@ -71,7 +71,7 @@ ai:
         - name: esg.energy.water.usage
           display-name: 용수 사용량
           keywords: [수도, water, 용수, 수도사용, 용수량]
-          required: false
+          required: true
         - name: esg.energy.water.bill
           display-name: 수도 고지서
           keywords: [수도고지서, 수도요금, water bill, 수도청구]
@@ -87,7 +87,7 @@ ai:
         - name: esg.hazmat.inventory
           display-name: 유해물질 목록
           keywords: [유해물질목록, 화학물질목록, hazmat inventory, 물질목록]
-          required: false
+          required: true
         - name: esg.hazmat.disposal.list
           display-name: 폐기물 처리 목록
           keywords: [폐기목록, 처리목록, disposal list, 폐기물]
@@ -103,15 +103,15 @@ ai:
         - name: esg.ethics.distribution.log
           display-name: 윤리강령 배포 확인
           keywords: [배포확인, 수신확인, distribution, 서명명단]
-          required: false
+          required: true
         - name: esg.ethics.pledge
           display-name: 윤리 서약서
           keywords: [서약서, pledge, 서약, 윤리서약]
-          required: false
+          required: true
         - name: esg.ethics.poster.image
           display-name: 윤리 포스터
           keywords: [포스터, poster, 윤리포스터, 게시물]
-          required: false
+          required: true
         - name: esg.other
           display-name: 기타 문서
           keywords: []

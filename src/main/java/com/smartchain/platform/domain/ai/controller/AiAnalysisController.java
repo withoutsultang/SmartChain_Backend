@@ -1,6 +1,11 @@
 package com.smartchain.platform.domain.ai.controller;
 
 import com.smartchain.platform.domain.ai.entity.AiAnalysisResult;
+import com.smartchain.platform.domain.ai.service.AiRunStateService;
+import com.smartchain.platform.dto.ai.AiRunStatusResponse;
+import com.smartchain.platform.global.error.CustomException;
+import com.smartchain.platform.global.error.ErrorCode;
+import org.springframework.core.task.TaskRejectedException;
 import com.smartchain.platform.domain.diagnostic.service.DiagnosticService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.smartchain.platform.domain.ai.service.AiAnalysisAsyncService;
@@ -36,12 +41,14 @@ public class AiAnalysisController {
     private final AiAnalysisAsyncService aiAnalysisAsyncService;
     private final SlotConfigProperties slotConfigProperties;
     private final DiagnosticService diagnosticService;
+    private final AiRunStateService runState;
 
-    public AiAnalysisController(AiAnalysisService aiAnalysisService, AiAnalysisAsyncService aiAnalysisAsyncService, SlotConfigProperties slotConfigProperties, DiagnosticService diagnosticService) {
+    public AiAnalysisController(AiAnalysisService aiAnalysisService, AiAnalysisAsyncService aiAnalysisAsyncService, SlotConfigProperties slotConfigProperties, DiagnosticService diagnosticService, AiRunStateService runState) {
         this.aiAnalysisService = aiAnalysisService;
         this.aiAnalysisAsyncService = aiAnalysisAsyncService;
         this.slotConfigProperties = slotConfigProperties;
         this.diagnosticService = diagnosticService;
+        this.runState = runState;
     }
 
     @Operation(summary = "AI Run Preview", description = "파일 추가 시 슬롯 추정 및 필수 항목 현황 확인")
@@ -64,7 +71,7 @@ public class AiAnalysisController {
 
     @Operation(summary = "AI Run Submit", description = "전체 파일에 대한 AI 검증 요청 (비동기)")
     @PostMapping("/submit")
-    public ResponseEntity<BaseResponse<Map<String, Object>>> requestAnalysis(
+    public ResponseEntity<BaseResponse<AiRunStatusResponse>> requestAnalysis(
         @AuthenticationPrincipal Long userId,
         @PathVariable Long diagnosticId,
         @RequestBody(required = false) AiAnalysisRequest request
@@ -75,18 +82,24 @@ public class AiAnalysisController {
         log.info("AI 분석 요청 - diagnosticId: {}, slotHints: {}", diagnosticId,
             request != null && request.slotHints() != null ? request.slotHints().size() : 0);
 
-        // 비동기로 분석 시작 (프론트에서 보낸 slotHints 전달)
-        aiAnalysisAsyncService.submitAsync(diagnosticId,
-            request != null ? request.slotHints() : null);
+        AiRunStatusResponse state = runState.claim(diagnosticId);
+        if (!state.duplicate()) {
+            try {
+                aiAnalysisAsyncService.submitAsync(diagnosticId,
+                    request != null ? request.slotHints() : null, state.requestId());
+            } catch (TaskRejectedException e) {
+                runState.fail(diagnosticId, state.requestId(), ErrorCode.AI_SERVICE_UNAVAILABLE.getCode());
+                throw new CustomException(ErrorCode.AI_SERVICE_UNAVAILABLE);
+            }
+        }
+        return ResponseEntity.accepted().body(BaseResponse.success("AI 분석 요청이 접수되었습니다", state));
+    }
 
-        Map<String, Object> response = Map.of(
-            "diagnosticId", diagnosticId,
-            "status", "PENDING",
-            "message", "AI 분석이 시작되었습니다. 결과는 조회 API로 확인하세요."
-        );
-
-        return ResponseEntity.accepted()
-            .body(BaseResponse.success("AI 분석 요청이 접수되었습니다", response));
+    @GetMapping("/status")
+    public ResponseEntity<BaseResponse<AiRunStatusResponse>> getRunStatus(
+            @AuthenticationPrincipal Long userId, @PathVariable Long diagnosticId) {
+        diagnosticService.getDiagnosticDetail(userId, diagnosticId);
+        return ResponseEntity.ok(BaseResponse.success(runState.status(diagnosticId)));
     }
 
     @Operation(summary = "AI Run 결과 조회", description = "진단의 최신 AI Run 분석 결과 조회")

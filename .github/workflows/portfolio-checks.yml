@@ -16,6 +16,18 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/checkout@v4
+        with:
+          repository: withoutsultang/SmartChain_AI
+          ref: main
+          path: ai-contract
+      - name: Verify shared ESG slot contract
+        run: |
+          pip install PyYAML
+          python ai-contract/scripts/verify_slot_contract.py --backend .
       - run: chmod +x gradlew
       - name: Login failure database regression
         run: ./gradlew test --tests '*LoginFailurePersistenceTest'

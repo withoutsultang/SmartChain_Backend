@@ -40,6 +40,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
+    @Mock private jakarta.persistence.EntityManager entityManager;
 
     @InjectMocks
     private FileService fileService;
@@ -97,6 +98,7 @@ class FileServiceTest {
 
     @BeforeEach
     void setUp() {
+        lenient().when(diagnosticRepository.findForUpdate(any())).thenReturn(java.util.Optional.of(testDiagnostic));
         // Role setup
         lenient().when(drafterRole.getCode()).thenReturn("DRAFTER");
         lenient().when(approverRole.getCode()).thenReturn("APPROVER");

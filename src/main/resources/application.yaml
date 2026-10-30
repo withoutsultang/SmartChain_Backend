@@ -8,92 +8,7 @@ spring:
 server:
   port: 8080
 
----
-# ========================================
-# 로컬 개발 환경
-# ========================================
-spring:
-  profiles:
-    active: local
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    url: jdbc:postgresql://localhost:5432/smartchain
-    username: esg
-    password: esg1234
-    driver-class-name: org.postgresql.Driver
-  sql:
-    init:
-      mode: always
-  jpa:
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-  open-in-view: false
-
-# Swagger 설정
-springdoc:
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-    display-request-duration: true
-  api-docs:
-    path: /v3/api-docs
-
-# JWT 설정
-jwt:
-  secret: smartchainPlatformSecretKeyForJwtTokenGenerationMustBe256BitsLongNiceDay
-  access-token-validity: 3600000
-  refresh-token-validity: 604800000
-
-# 로깅 설정
-logging:
-  level:
-    com.smartchain.platform: DEBUG
-    org.hibernate.SQL: DEBUG
-
-# reCAPTCHA v3 설정
-recaptcha:
-  secret-key: ${RECAPTCHA_SECRET_KEY:6LcC-V8sAAAAAHpYoUj5q31vQh9hDduj-4m7hvGc}
-  score-threshold: ${RECAPTCHA_SCORE_THRESHOLD:0.5}
-  enabled: ${RECAPTCHA_ENABLED:false}
-
-# DataInitializer 설정
-app:
-  data-initializer:
-    enabled: true
-
-# 파일 저장소 설정 (로컬)
-file:
-  storage:
-    local:
-      base-path: ./uploads
-
-# AI 관련 설정들 (로컬 기준)
 ai:
-  run-api:
-    url: http://127.0.0.1:8000
-    timeout-seconds: 180
-    max-retry: 3
-  risk-api:
-    url: http://127.0.0.1:8002
-    timeout-seconds: 60
-    max-retry: 3
-    target-companies:
-      - 포스코홀딩스
-      - 현대제철
-      - 성광벤드
-      - 동국제강
-      - HD현대일렉트릭
-  chat:
-    base-url: http://127.0.0.1:8001
-    admin-api-key: ${AI_CHAT_ADMIN_KEY:test-key}
-    timeout-seconds: 30
   slots:
     domains:
       esg:
@@ -116,7 +31,7 @@ ai:
         - name: esg.energy.water.usage
           display-name: 용수 사용량
           keywords: [수도, water, 용수, 수도사용, 용수량]
-          required: false
+          required: true
         - name: esg.energy.water.bill
           display-name: 수도 고지서
           keywords: [수도고지서, 수도요금, water bill, 수도청구]
@@ -132,7 +47,7 @@ ai:
         - name: esg.hazmat.inventory
           display-name: 유해물질 목록
           keywords: [유해물질목록, 화학물질목록, hazmat inventory, 물질목록]
-          required: false
+          required: true
         - name: esg.hazmat.disposal.list
           display-name: 폐기물 처리 목록
           keywords: [폐기목록, 처리목록, disposal list, 폐기물]
@@ -148,15 +63,15 @@ ai:
         - name: esg.ethics.distribution.log
           display-name: 윤리강령 배포 확인
           keywords: [배포확인, 수신확인, distribution, 서명명단]
-          required: false
+          required: true
         - name: esg.ethics.pledge
           display-name: 윤리 서약서
           keywords: [서약서, pledge, 서약, 윤리서약]
-          required: false
+          required: true
         - name: esg.ethics.poster.image
           display-name: 윤리 포스터
           keywords: [포스터, poster, 윤리포스터, 게시물]
-          required: false
+          required: true
         - name: esg.other
           display-name: 기타 문서
           keywords: []
@@ -247,6 +162,94 @@ ai:
       - name: esg.hazmat.msds.coverage
         display-name: 유해물질 MSDS 커버리지
         slots: [esg.hazmat.msds, esg.hazmat.inventory]
+
+
+---
+# ========================================
+# 로컬 개발 환경
+# ========================================
+spring:
+  profiles:
+    active: local
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smartchain
+    username: esg
+    password: esg1234
+    driver-class-name: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  open-in-view: false
+
+# Swagger 설정
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs
+
+# JWT 설정
+jwt:
+  secret: smartchainPlatformSecretKeyForJwtTokenGenerationMustBe256BitsLongNiceDay
+  access-token-validity: 3600000
+  refresh-token-validity: 604800000
+
+# 로깅 설정
+logging:
+  level:
+    com.smartchain.platform: DEBUG
+    org.hibernate.SQL: DEBUG
+
+# reCAPTCHA v3 설정
+recaptcha:
+  secret-key: ${RECAPTCHA_SECRET_KEY:6LcC-V8sAAAAAHpYoUj5q31vQh9hDduj-4m7hvGc}
+  score-threshold: ${RECAPTCHA_SCORE_THRESHOLD:0.5}
+  enabled: ${RECAPTCHA_ENABLED:false}
+
+# DataInitializer 설정
+app:
+  data-initializer:
+    enabled: true
+
+# 파일 저장소 설정 (로컬)
+file:
+  storage:
+    local:
+      base-path: ./uploads
+
+# AI 관련 설정들 (로컬 기준)
+ai:
+  run-api:
+    url: http://127.0.0.1:8000
+    timeout-seconds: 180
+    max-retry: 3
+  risk-api:
+    url: http://127.0.0.1:8002
+    timeout-seconds: 60
+    max-retry: 3
+    target-companies:
+      - 포스코홀딩스
+      - 현대제철
+      - 성광벤드
+      - 동국제강
+      - HD현대일렉트릭
+  chat:
+    base-url: http://127.0.0.1:8001
+    admin-api-key: ${AI_CHAT_ADMIN_KEY:test-key}
+    timeout-seconds: 30
 
 ---
 # ========================================

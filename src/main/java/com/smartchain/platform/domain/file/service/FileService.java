@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FileService {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
 
     private final UserRepository userRepository;
     private final DiagnosticRepository diagnosticRepository;
@@ -68,6 +70,8 @@ public class FileService {
                 .orElseThrow(() -> new CustomException(ErrorCode.DIAGNOSTIC_NOT_FOUND));
 
         validateDiagnosticAccess(user, diagnostic);
+
+        ensureNoActiveAnalysis(diagnosticId);
 
         // 제출 이후 상태에서는 파일 업로드 불가
         if (isSubmittedOrLater(diagnostic.getStatus())) {
@@ -269,6 +273,7 @@ public class FileService {
             }
         }
 
+        if (evidenceFile.getDiagnostic() != null) ensureNoActiveAnalysis(evidenceFile.getDiagnostic().getDiagnosticId());
         fileStorageService.delete(evidenceFile.getFilePath());
         evidenceFileRepository.delete(evidenceFile);
 
@@ -321,6 +326,14 @@ public class FileService {
                 .expiresAt(expiresAt)
                 .manifest(manifest)
                 .build();
+    }
+
+    private void ensureNoActiveAnalysis(Long diagnosticId) {
+        Diagnostic locked = diagnosticRepository.findForUpdate(diagnosticId)
+                .orElseThrow(() -> new CustomException(ErrorCode.DIAGNOSTIC_NOT_FOUND));
+        entityManager.refresh(locked, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+        if (locked.isAiRunExpired()) locked.failAiRun(ErrorCode.AI_SERVICE_UNAVAILABLE.getCode());
+        if (locked.isAiRunActive()) throw new CustomException(ErrorCode.AI_ANALYSIS_IN_PROGRESS);
     }
 
     // ========== Private Helper Methods ==========

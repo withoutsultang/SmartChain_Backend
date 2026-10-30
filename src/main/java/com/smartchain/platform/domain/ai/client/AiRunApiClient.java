@@ -36,6 +36,7 @@ public class AiRunApiClient {
 
     private final WebClient webClient;
     private final int maxRetry;
+    private final int submitTimeoutSeconds;
     private final int previewTimeoutSeconds;
     private final int previewMaxRetry;
 
@@ -45,6 +46,7 @@ public class AiRunApiClient {
     ) {
         this.webClient = webClient;
         this.maxRetry = config.getMaxRetry();
+        this.submitTimeoutSeconds = config.getTimeoutSeconds();
         this.previewTimeoutSeconds = config.getPreviewTimeoutSeconds();
         this.previewMaxRetry = config.getPreviewMaxRetry();
     }
@@ -95,6 +97,7 @@ public class AiRunApiClient {
             .bodyValue(request)
             .retrieve()
             .bodyToMono(RunSubmitResponse.class)
+            .timeout(Duration.ofSeconds(submitTimeoutSeconds))
             .map(this::validateSubmitResponse)
             .retryWhen(Retry.backoff(maxRetry, Duration.ofSeconds(2))
                 .filter(this::isRetryableError)
@@ -147,6 +150,7 @@ public class AiRunApiClient {
         if (throwable instanceof ConnectException ||
             throwable instanceof ConnectTimeoutException ||
             throwable instanceof SocketTimeoutException ||
+            throwable instanceof io.netty.handler.timeout.ReadTimeoutException ||
             throwable instanceof TimeoutException) {
             return true;
         }
@@ -155,6 +159,7 @@ public class AiRunApiClient {
             return cause instanceof ConnectException ||
                    cause instanceof ConnectTimeoutException ||
                    cause instanceof SocketTimeoutException ||
+                   cause instanceof io.netty.handler.timeout.ReadTimeoutException ||
                    cause instanceof TimeoutException;
         }
         return false;

@@ -58,6 +58,42 @@ public class Diagnostic extends BaseTimeEntity {
 
     private String previewPackageId;
 
+    // Durable analysis attempt, distinct from append-only analysis result history.
+    private String aiRunRequestId;
+    private String aiRunStatus = "IDLE";
+    private String aiRunErrorCode;
+    private Long aiRunResultId;
+    private LocalDateTime aiRunExpiresAt;
+
+    public boolean isAiRunActive() {
+        return "PENDING".equals(aiRunStatus) || "RUNNING".equals(aiRunStatus);
+    }
+
+    public boolean isAiRunExpired() {
+        return isAiRunActive() && aiRunExpiresAt != null && !aiRunExpiresAt.isAfter(LocalDateTime.now());
+    }
+
+    public boolean ownsAiRun(String requestId) {
+        return requestId != null && requestId.equals(aiRunRequestId) && isAiRunActive() && !isAiRunExpired();
+    }
+
+    public void beginAiRun(String requestId, LocalDateTime expiresAt) {
+        aiRunRequestId = requestId;
+        aiRunStatus = "PENDING";
+        aiRunErrorCode = null;
+        aiRunResultId = null;
+        aiRunExpiresAt = expiresAt;
+    }
+
+    public void startAiRun() { aiRunStatus = "RUNNING"; }
+    public void failAiRun(String code) { aiRunStatus = "FAILED"; aiRunErrorCode = code; }
+    public void completeAiRun(Long resultId) {
+        aiRunStatus = "SUCCEEDED";
+        aiRunErrorCode = null;
+        aiRunResultId = resultId;
+    }
+
+
     @Builder
     public Diagnostic(String diagnosticCode, String title, Campaign campaign, Company company,
                       Domain domain, Long drafterId, LocalDate periodStartDate, LocalDate periodEndDate, LocalDate deadline) {

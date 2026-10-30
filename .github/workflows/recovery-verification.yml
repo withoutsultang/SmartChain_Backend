@@ -1,0 +1,42 @@
+name: Workflow and AI recovery verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths: ['.github/workflows/recovery-verification.yml']
+permissions:
+  contents: read
+jobs:
+  postgres-http:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: authorization
+          POSTGRES_USER: audit
+          POSTGRES_PASSWORD: isolated-audit-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U audit -d authorization"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Real HTTP resubmission, failures, retries, concurrency and authorization
+        run: bash gradlew test --tests '*AiRecoveryHttpTest' --tests '*AiAuthorizationHttpTest' --no-daemon
+        env:
+          AUTHORIZATION_DATABASE_URL: jdbc:postgresql://localhost:5432/authorization
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workflow-recovery-http-evidence
+          path: |
+            build/test-results/test/
+            build/reports/tests/test/
+          retention-days: 7

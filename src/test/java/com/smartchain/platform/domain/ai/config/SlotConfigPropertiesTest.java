@@ -171,7 +171,7 @@ class SlotConfigPropertiesTest {
     class GetRequiredSlotsTest {
 
         @Test
-        @DisplayName("ESG 도메인의 필수 슬롯은 4개다")
+        @DisplayName("주입된 ESG 단위 시험 fixture에서 필수 4개를 필터링한다")
         void getRequiredSlots_esg() {
             List<SlotConfigProperties.SlotDefinition> required = properties.getRequiredSlots("esg");
             assertThat(required).hasSize(4);
@@ -228,13 +228,13 @@ class SlotConfigPropertiesTest {
         private SlotConfigProperties yamlProperties;
 
         @Test
-        @DisplayName("ESG 도메인은 16개 슬롯(기타 포함), 4개 필수로 정의되어야 한다")
+        @DisplayName("ESG 도메인은 16개 슬롯(기타 포함), AI 계약의 9개 필수로 정의되어야 한다")
         void yamlLoading_esgSlotCount() {
             List<SlotConfigProperties.SlotDefinition> esgSlots = yamlProperties.getSlotsForDomain("esg");
             List<SlotConfigProperties.SlotDefinition> esgRequired = yamlProperties.getRequiredSlots("esg");
 
             assertThat(esgSlots).hasSize(16);
-            assertThat(esgRequired).hasSize(4);
+            assertThat(esgRequired).hasSize(9);
         }
 
         @Test

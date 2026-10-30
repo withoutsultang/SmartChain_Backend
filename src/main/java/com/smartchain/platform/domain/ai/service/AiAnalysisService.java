@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class AiAnalysisService {
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
     private static final Logger log = LoggerFactory.getLogger(AiAnalysisService.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -128,6 +131,15 @@ public class AiAnalysisService {
      */
     @Transactional
     public AiAnalysisResult submit(Long diagnosticId, List<SlotHint> frontendSlotHints) {
+        return submitInternal(diagnosticId, frontendSlotHints, null);
+    }
+
+    @Transactional
+    public AiAnalysisResult submitForRun(Long diagnosticId, List<SlotHint> frontendSlotHints, String requestId) {
+        return submitInternal(diagnosticId, frontendSlotHints, requestId);
+    }
+
+    private AiAnalysisResult submitInternal(Long diagnosticId, List<SlotHint> frontendSlotHints, String requestId) {
         Diagnostic diagnostic = getDiagnostic(diagnosticId);
         String domainCode = getDomainCode(diagnostic);
 
@@ -195,7 +207,17 @@ public class AiAnalysisService {
         RunSubmitResponse enrichedResponse = enrichWithDisplayNames(response, slotHints, domainCode);
 
         // 결과 저장
-        return saveAnalysisResult(diagnostic, domainCode, enrichedResponse);
+        if (requestId != null) {
+            // Refresh after the network wait: a lease may have expired or a retry may own the row.
+            diagnosticRepository.findForUpdate(diagnosticId).orElseThrow();
+            entityManager.refresh(diagnostic, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+            if (!diagnostic.ownsAiRun(requestId) || !"RUNNING".equals(diagnostic.getAiRunStatus())) {
+                throw new CustomException(ErrorCode.AI_ANALYSIS_IN_PROGRESS);
+            }
+        }
+        AiAnalysisResult saved = saveAnalysisResult(diagnostic, domainCode, enrichedResponse);
+        if (requestId != null) diagnostic.completeAiRun(saved.getId());
+        return saved;
     }
 
     /**

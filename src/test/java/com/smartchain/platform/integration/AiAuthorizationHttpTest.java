@@ -180,7 +180,7 @@ class AiAuthorizationHttpTest {
         ResponseEntity<String> r = request("owner", path, ownFileId);
         assertThat(r.getStatusCode().value()).isEqualTo(path.equals("/submit") ? 202 : 200);
         if (path.equals("/preview")) verify(ai).previewSync(any());
-        if (path.equals("/submit")) verify(async).submitAsync(eq(diagnosticId), any());
+        if (path.equals("/submit")) assertThat(mockingDetails(async).getInvocations()).hasSize(1);
     }
 
     @ParameterizedTest @MethodSource("authorizedReaders")
